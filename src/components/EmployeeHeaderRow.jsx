@@ -1,18 +1,20 @@
 import React from "react";
-import Col from "./Col";
-import Row from "./Row";
+// import Col from "./Col";
+// import tr from "./tr";
 
 const EmployeeHeaderRow = (props) => {
   return (
-    <Row>
-      <Col width={1}>
+    <tr>
+      {/* <Col width={1}> */}
+      <th className="align-middle" scope="col">
         <div style={{ width: 48, height: 48 }}></div>
-      </Col>
-      <Col>
+      {/* </Col> */}
+      </th>
+      <th className="align-middle" scope="col">
       <div className="input-group">
           <div className="input-group-prepend">
             <button
-              className="btn btn-dark"
+              className="btn btn-primary"
               type="button"
               id="button-addon1"
               onClick={props.sortByName}
@@ -21,20 +23,22 @@ const EmployeeHeaderRow = (props) => {
             </button>
           </div>
           <input
+            name="name"
             type="text"
             className="form-control"
             placeholder=""
             aria-label="Example text with button addon"
             aria-describedby="button-addon1"
-            onChange={props.handleNameChange}
+            onChange={props.handleInputChange}
+            value={props.name}
           />
         </div>
-      </Col>
-      <Col>
+      </th>
+      <th className="align-middle" scope="col">
       <div className="input-group">
           <div className="input-group-prepend">
             <button
-              className="btn btn-dark"
+              className="btn btn-primary"
               type="button"
               id="button-addon1"
               onClick={props.sortByEmail}
@@ -44,37 +48,41 @@ const EmployeeHeaderRow = (props) => {
           </div>
           <input
             type="text"
+            name="email"
             className="form-control"
             placeholder=""
             aria-label="Example text with button addon"
             aria-describedby="button-addon1"
-            onChange={props.handleEmailChange}
+            onChange={props.handleInputChange}
+            value={props.email}
           />
         </div>
-      </Col>
-      <Col>
+      </th>
+      <th className="align-middle" scope="col">
         <div className="input-group">
           <div className="input-group-prepend">
             <button
-              className="btn btn-dark"
+              className="btn btn-primary"
               type="button"
               id="button-addon1"
-              // onClick={props.sortByPhone}
+              onClick={props.sortByPhone}
             >
               Phone
             </button>
           </div>
           <input
+            name="phone"
             type="text"
             className="form-control"
             placeholder=""
             aria-label="Example text with button addon"
             aria-describedby="button-addon1"
-            // onChange={props.handlePhoneChange}
+            onChange={props.handleInputChange}
+            value={props.phone}
           />
         </div>
-      </Col>
-    </Row>
+      </th>
+    </tr>
   );
 };
 

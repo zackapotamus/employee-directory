@@ -10,7 +10,10 @@ class Directory extends Component {
     employees: randomUsers.results,
     filter: "",
     sort: "",
-    order: "asc"
+    order: "asc",
+    name: "",
+    phone: "",
+    email: "",
   };
 
   sortBy = (sortField) => {
@@ -27,7 +30,40 @@ class Directory extends Component {
             }
           }),
           sort: "email",
-          order: this.state.sort === "email" ? (this.state.order === "asc" ? "desc" : "asc") : "asc"
+          order:
+            this.state.sort === "email"
+              ? this.state.order === "asc"
+                ? "desc"
+                : "asc"
+              : "asc",
+        });
+        break;
+      case "phone":
+        console.log("sort by phone");
+        this.setState({
+          employees: this.state.employees.sort((a, b) => {
+            let regex = /\d/g;
+            let aPhoneNumber = a.phone.match(regex).join("");
+            let bPhoneNumber = b.phone.match(regex).join("");
+            let ret =
+              aPhoneNumber < bPhoneNumber
+                ? -1
+                : aPhoneNumber === bPhoneNumber
+                ? 0
+                : 1;
+            if (this.state.sort === "phone") {
+              return this.state.order === "asc" ? -ret : ret;
+            } else {
+              return ret;
+            }
+          }),
+          sort: "phone",
+          order:
+            this.state.sort === "phone"
+              ? this.state.order === "asc"
+                ? "desc"
+                : "asc"
+              : "asc",
         });
         break;
       default:
@@ -45,31 +81,86 @@ class Directory extends Component {
             }
           }),
           sort: "name",
-          order: this.state.sort === "name" ? (this.state.order === "asc" ? "desc" : "asc") : "asc"
+          order:
+            this.state.sort === "name"
+              ? this.state.order === "asc"
+                ? "desc"
+                : "asc"
+              : "asc",
         });
         break;
     }
   };
 
-  //   handleSortByEmail = ()
+  handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Updating the input's state
+    this.setState({
+      name: "",
+      phone: "",
+      email: "",
+      [name]: value,
+    });
+  };
 
   render() {
     return (
       <>
         <Jumbotron />
         <Container>
-          <EmployeeHeaderRow
-            sortByName={() => {
-              this.sortBy("name");
-            }}
-            sortByEmail={() => {
-              this.sortBy("email");
-            }}
-          />
-
-          {this.state.employees.map((employee) => (
-            <EmployeeRow key={employee.email} employee={employee} />
-          ))}
+          <table className="table table-striped table-hover">
+            <thead className="thead-dark">
+              <EmployeeHeaderRow
+                sortByName={() => {
+                  this.sortBy("name");
+                }}
+                sortByEmail={() => {
+                  this.sortBy("email");
+                }}
+                sortByPhone={() => {
+                  this.sortBy("phone");
+                }}
+                handleInputChange={this.handleInputChange}
+                name={this.state.name}
+                email={this.state.email}
+                phone={this.state.phone}
+              />
+            </thead>
+            <tbody>
+              {this.state.employees
+                .filter((employee) => {
+                  let filterBy =
+                    (this.state.name && "name") ||
+                    (this.state.phone && "phone") ||
+                    (this.state.email && "email") || "none";
+                  switch (filterBy) {
+                    case "name":
+                      return new RegExp(this.state.name, "gi").test(
+                        `${employee.name.first} ${employee.name.last}`
+                      );
+                    case "email":
+                      return new RegExp(this.state.email, "gi").test(
+                        employee.email
+                      );
+                    case "phone":
+                      let phoneRegex = /\d/g;
+                      let employeePhone = employee.phone
+                        .match(phoneRegex)
+                        .join("");
+                      let phoneInput = this.state.phone
+                        .match(phoneRegex)
+                        .join("");
+                      return new RegExp(phoneInput, "g").test(employeePhone);
+                    default:
+                      return true
+                  }
+                })
+                .map((employee) => (
+                  <EmployeeRow key={employee.email} employee={employee} />
+                ))}
+            </tbody>
+          </table>
         </Container>
       </>
     );

@@ -1,21 +1,23 @@
 import React from "react";
-import Row from "../components/Row";
-import Col from "../components/Col";
+// import tr from "../components/tr";
+// import Col from "../components/Col";
 
 const EmployeeRow = (props) => {
   return (
-    <Row>
-      <Col width={1}>
+    <tr>
+      {/* <Col width={1}> */}
+      <td className="align-middle">
         <img
           src={props.employee.picture.thumbnail}
           alt={`${props.employee.name.first} ${props.employee.name.last}`}
           style={{width: 48}}
         />
-      </Col>
-      <Col>{`${props.employee.name.first} ${props.employee.name.last}`}</Col>
-      <Col>{props.employee.email}</Col>
-      <Col>{props.employee.phone}</Col>
-    </Row>
+      </td>
+      {/* </Col> */}
+      <td className="align-middle">{`${props.employee.name.first} ${props.employee.name.last}`}</td>
+      <td className="align-middle">{props.employee.email}</td>
+      <td className="align-middle">{props.employee.phone}</td>
+    </tr>
   );
 };
 
