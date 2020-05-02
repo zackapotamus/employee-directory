@@ -19,7 +19,6 @@ class Directory extends Component {
   sortBy = (sortField) => {
     switch (sortField) {
       case "email":
-        console.log("sort by email");
         this.setState({
           employees: this.state.employees.sort((a, b) => {
             let ret = a.email < b.email ? -1 : a.email === b.email ? 0 : 1;
@@ -39,12 +38,10 @@ class Directory extends Component {
         });
         break;
       case "phone":
-        console.log("sort by phone");
         this.setState({
           employees: this.state.employees.sort((a, b) => {
-            let regex = /\d/g;
-            let aPhoneNumber = a.phone.match(regex).join("");
-            let bPhoneNumber = b.phone.match(regex).join("");
+            let aPhoneNumber = this.numbersFromString(a.phone);
+            let bPhoneNumber = this.numbersFromString(b.phone);
             let ret =
               aPhoneNumber < bPhoneNumber
                 ? -1
@@ -67,7 +64,6 @@ class Directory extends Component {
         });
         break;
       default:
-        console.log("sort by name");
         this.setState({
           employees: this.state.employees.sort((a, b) => {
             let aFullName = `${a.name.first.toLowerCase()} ${a.name.last.toLowerCase()}`;
@@ -92,16 +88,28 @@ class Directory extends Component {
     }
   };
 
+  numbersFromString = (inputString) => {
+    return (inputString.match(/\d/g) || [""]).join("");
+  }
+
   handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // Updating the input's state
-    this.setState({
-      name: "",
-      phone: "",
-      email: "",
-      [name]: value,
-    });
+    if (name === "phone") {
+      this.setState({
+        // name: "",
+        phone: this.numbersFromString(value),
+        // email: "",
+      });
+    } else {
+      // Updating the input's state
+      this.setState({
+        // name: "",
+        // phone: "",
+        // email: "",
+        [name]: value,
+      });
+    }
   };
 
   render() {
@@ -129,32 +137,36 @@ class Directory extends Component {
             </thead>
             <tbody>
               {this.state.employees
+                // .filter((employee) => {
+                //   let filterBy =
+                //     (this.state.name && "name") ||
+                //     (this.state.phone && "phone") ||
+                //     (this.state.email && "email") ||
+                //     "none";
+                //   switch (filterBy) {
+                //     case "name":
+                //       return new RegExp(this.state.name, "gi").test(
+                //         `${employee.name.first} ${employee.name.last}`
+                //       );
+                //     case "email":
+                //       return new RegExp(this.state.email, "gi").test(
+                //         employee.email
+                //       );
+                //     case "phone":
+                //       let phoneRegex = /\d/g;
+                //       let employeePhone = employee.phone
+                //         .match(phoneRegex)
+                //         .join("");
+                //       let phoneInput = this.state.phone
+                //         .match(phoneRegex)
+                //         .join("");
+                //       return new RegExp(phoneInput, "g").test(employeePhone);
+                //     default:
+                //       return true;
+                //   }
+                // })
                 .filter((employee) => {
-                  let filterBy =
-                    (this.state.name && "name") ||
-                    (this.state.phone && "phone") ||
-                    (this.state.email && "email") || "none";
-                  switch (filterBy) {
-                    case "name":
-                      return new RegExp(this.state.name, "gi").test(
-                        `${employee.name.first} ${employee.name.last}`
-                      );
-                    case "email":
-                      return new RegExp(this.state.email, "gi").test(
-                        employee.email
-                      );
-                    case "phone":
-                      let phoneRegex = /\d/g;
-                      let employeePhone = employee.phone
-                        .match(phoneRegex)
-                        .join("");
-                      let phoneInput = this.state.phone
-                        .match(phoneRegex)
-                        .join("");
-                      return new RegExp(phoneInput, "g").test(employeePhone);
-                    default:
-                      return true
-                  }
+                  return new RegExp(this.state.name, "gi").test(`${employee.name.first} ${employee.name.last}`) && new RegExp(this.state.email, "gi").test(employee.email) && new RegExp(this.state.phone, 'g').test(this.numbersFromString(employee.phone));
                 })
                 .map((employee) => (
                   <EmployeeRow key={employee.email} employee={employee} />
