@@ -5,6 +5,13 @@ import Jumbotron from "../components/Jumbotron";
 import randomUsers from "../randomuser.json";
 import EmployeeHeaderRow from "../components/EmployeeHeaderRow";
 
+const escapeRegex = (inputString) => {
+  return inputString.replace(/([\.\?\+\*])/g, '\\$1');
+}
+
+const numbersFromString = (inputString) => {
+  return (inputString.match(/\d/g) || [""]).join("");
+};
 class Directory extends Component {
   state = {
     employees: randomUsers.results,
@@ -40,8 +47,8 @@ class Directory extends Component {
       case "phone":
         this.setState({
           employees: this.state.employees.sort((a, b) => {
-            let aPhoneNumber = this.numbersFromString(a.phone);
-            let bPhoneNumber = this.numbersFromString(b.phone);
+            let aPhoneNumber = numbersFromString(a.phone);
+            let bPhoneNumber = numbersFromString(b.phone);
             let ret =
               aPhoneNumber < bPhoneNumber
                 ? -1
@@ -88,25 +95,16 @@ class Directory extends Component {
     }
   };
 
-  numbersFromString = (inputString) => {
-    return (inputString.match(/\d/g) || [""]).join("");
-  }
-
   handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
       this.setState({
-        // name: "",
-        phone: this.numbersFromString(value),
-        // email: "",
+        phone: numbersFromString(value),
       });
     } else {
       // Updating the input's state
       this.setState({
-        // name: "",
-        // phone: "",
-        // email: "",
         [name]: value,
       });
     }
@@ -137,36 +135,16 @@ class Directory extends Component {
             </thead>
             <tbody>
               {this.state.employees
-                // .filter((employee) => {
-                //   let filterBy =
-                //     (this.state.name && "name") ||
-                //     (this.state.phone && "phone") ||
-                //     (this.state.email && "email") ||
-                //     "none";
-                //   switch (filterBy) {
-                //     case "name":
-                //       return new RegExp(this.state.name, "gi").test(
-                //         `${employee.name.first} ${employee.name.last}`
-                //       );
-                //     case "email":
-                //       return new RegExp(this.state.email, "gi").test(
-                //         employee.email
-                //       );
-                //     case "phone":
-                //       let phoneRegex = /\d/g;
-                //       let employeePhone = employee.phone
-                //         .match(phoneRegex)
-                //         .join("");
-                //       let phoneInput = this.state.phone
-                //         .match(phoneRegex)
-                //         .join("");
-                //       return new RegExp(phoneInput, "g").test(employeePhone);
-                //     default:
-                //       return true;
-                //   }
-                // })
                 .filter((employee) => {
-                  return new RegExp(this.state.name, "gi").test(`${employee.name.first} ${employee.name.last}`) && new RegExp(this.state.email, "gi").test(employee.email) && new RegExp(this.state.phone, 'g').test(this.numbersFromString(employee.phone));
+                  return (
+                    new RegExp(escapeRegex(this.state.name), "gi").test(
+                      `${employee.name.first} ${employee.name.last}`
+                    ) &&
+                    new RegExp(escapeRegex(this.state.email), "gi").test(employee.email) &&
+                    new RegExp(escapeRegex(this.state.phone), "g").test(
+                      numbersFromString(employee.phone)
+                    )
+                  );
                 })
                 .map((employee) => (
                   <EmployeeRow key={employee.email} employee={employee} />
